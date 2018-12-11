@@ -8,7 +8,7 @@ var db = require('./models');
 var PORT = 8081;
 
 //call on express to start up
-var app = experss();
+var app = express();
 
 //configure middleware
 app.use(logger("dev"));
@@ -31,7 +31,7 @@ app.get("/scrape", function (req, res) {
         var $ = cheerio.load(response.data);
 
         //grab every h2 within an article tag, and do the following
-        $("article h2").each(function (i, element) {
+        $("scrape h2").each(function (i, element) {
 
             var results = {};
 
@@ -43,10 +43,10 @@ app.get("/scrape", function (req, res) {
                 .attr("href")
 
             //create a new article using the 'results' object built from scraping
-            db.Article.create(result)
-                .then(function (dbArticle) {
+            db.Scrape.create(result)
+                .then(function (dbScrape) {
                     //view the result in the console
-                    console.log(dbArticle);
+                    console.log(dbScrape);
                 })
                 .catch(function (err) {
 
@@ -65,12 +65,12 @@ app.get("/scrape", function (req, res) {
 
 });
 
-app.get("/articles/:id", function (req, res) {
+app.get("/scrape/:id", function (req, res) {
 
-    db.Article.findOne({ _id: req.params.id })
+    db.Scrape.findOne({ _id: req.params.id })
         //populate the text with the associated article
         .populate("note")
-        .then(function (dbArticle) {
+        .then(function (dbScrape) {
         })
         .catch(function (err) {
             //if error occured
@@ -79,25 +79,26 @@ app.get("/articles/:id", function (req, res) {
 });
 
 //Route for saying/updating an article's assocated note
-app.post("/article/id:", function (req, res) {
+app.post("/scrape/id:", function (req, res) {
     //create a new note and pass onto req.body 
     db.Note.create(req.body)
         .then(function (dbNotes) {
 
-            return db.Article.findOneAndUpdate({ _id: req.params.id }), { new: true });
+            return db.Scrape.findOneAndUpdate({ _id: req.params.id }, { new: true });
 
 
-}).then(function (dbArticle) {
-    // If we were able to successfully update an Article, send it back to the client
-    res.json(dbArticle);
-})
-    .catch(function (err) {
-        // If an error occurred, send it to the client
-        res.json(err);
+        }).then(function (dbScrape) {
+            // If we were able to successfully update an Article, send it back to the client
+            res.json(dbScrape);
+        })
+        .catch(function (err) {
+            // If an error occurred, send it to the client
+            res.json(err);
 
+        });
     });
 
-app.listen(PORT, function () {
-    console.log("App is running on port localhost:// " + PORT);
-});
+    app.listen(PORT, function () {
+        console.log("App is running on port localhost:// " + PORT);
+    });
 

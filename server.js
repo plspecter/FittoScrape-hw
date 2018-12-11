@@ -100,6 +100,6 @@ app.post("/scrape/id:", function (req, res) {
     });
 
     app.listen(PORT, function () {
-        console.log("App is running on port localhost:// " + PORT);
+        console.log("App is running on port localhost: " + PORT);
     });
 
